@@ -1,38 +1,31 @@
-# SIM Lookup — Free Hosting Guide (Render)
+# SIM Lookup — Free Hosting Guide (Cloudflare Pages — NO credit card!)
 
-Is project ko Render pe free deploy karo — permanent public URL, PC band ho to bhi live.
+Ye site GitHub repo se Cloudflare Pages pe deploy hoti hai — bilkul free, credit card NAHI chahiye.
 
-## Step 1 — GitHub pe repo banao
-1. [github.com](https://github.com) kholo → **New repository**
-2. Name: `simlookup` (Private ya Public — jo chahein)
-3. Create karo (empty repo, README mat banwano)
+## Files structure
+- `index.html` → site (root pe)
+- `functions/api/lookup.js` → API proxy (server-side, CORS ka masla nahi)
 
-## Step 2 — Files push karo
-Apne PC pe terminal me:
-```bash
-cd "/home/anythingispossible/MY TOOLS/simlookup-render"
-git init
-git add .
-git commit -m "SIM lookup site"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/simlookup.git
-git push -u origin main
-```
-(YOUR_USERNAME ki jagah apna username likho — push pe GitHub login/password mangega,
-ya Personal Access Token se bhi kaam ho jata hai)
+## Deploy steps
 
-## Step 3 — Render pe deploy
-1. [render.com](https://render.com) → **Sign up** (GitHub se sign up karo, sabse easy)
-2. Dashboard me → **New +** → **Blueprint** → apna `simlookup` repo chuno
-3. Render khud `render.yaml` dekh ke deploy kar dega
-4. 2-3 minute me URL milega: `https://simlookup.onrender.com`
+### Step 1 — index.html root pe rahe (pehle se hai)
+### Step 2 — Cloudflare account
+1. [dash.cloudflare.com](https://dash.cloudflare.com) kholo → **Sign up** (email se, free)
+2. Login karo
 
-## Bas!
-- URL kisi ko bhi bhejo — duniya me kahin se bhi use karenge
-- PC band ho to bhi chalega (free plan pe 15 min khaali rehne pe so jata hai,
-  pehla open karne wala ~30 sec wait karta hai — phir fast)
+### Step 3 — Pages deploy
+1. Dashboard me left side **Workers & Pages** → **Create** → **Pages** → **Connect to Git**
+2. **GitHub** connect karo (allow karo)
+3. `simlookup` repo chuno
+4. Build settings me kuch badalne ki zaroorat NAHI — sab default
+   (Build command khali, Output directory khali)
+5. **Save and Deploy** dabao
+
+### Step 4 — URL milega!
+1-2 minute me: `https://simlookup.pages.dev`
+- Ye URL kisi ko bhi bhejo — duniya me kahin se use karenge
+- Har baar GitHub pe change push karo to site khud update hoti hai
 
 ## Agar deploy fail ho jaye
-- Render dashboard → Logs dekho
-- Sabse common problem: simsowner.net.pk Render ke server se block ho — phir
-  Render pe region **Frankfurt** try karo (deploy ke time choose hota hai)
+- Cloudflare dashboard → Pages → simlookup → **Deployments** → Logs dekho
+- Sabse common: `functions` folder wrong jagah — root pe hona chahiye (ye repo me already hai)
