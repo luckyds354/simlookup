@@ -1,0 +1,12 @@
+{
+  "name": "simlookup",
+  "version": "1.0.0",
+  "description": "SIM Owner Lookup — DsKinG",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

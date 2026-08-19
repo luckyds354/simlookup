@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIM Owner Lookup</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(160deg, #0f2027, #203a43, #2c5364);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  /* Live Video VFX Effect for DsKinG */
+  .vfx-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .live-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 23, 68, 0.2);
+    border: 1px solid rgba(255, 23, 68, 0.6);
+    color: #ff1744;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    box-shadow: 0 0 12px rgba(255, 23, 68, 0.4);
+  }
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    background-color: #ff1744;
+    border-radius: 50%;
+    animation: livePulse 1.2s infinite ease-in-out;
+    box-shadow: 0 0 8px #ff1744;
+  }
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.7); }
+  }
+
+  .app-title {
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    position: relative;
+    display: inline-block;
+    background: linear-gradient(90deg, #00f0ff, #7000ff, #ff007b, #00f0ff);
+    background-size: 300% 300%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientShift 4s ease infinite, glitchVfx 3s infinite alternate;
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+    font-family: 'Impact', 'Arial Black', sans-serif;
+  }
+
+  /* Scanlines & Glow Overlay for Cinema / Live feel */
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  @keyframes glitchVfx {
+    0% {
+      filter: drop-shadow(0 0 5px rgba(0, 240, 255, 0.6)) drop-shadow(-2px 0 0 rgba(255, 0, 100, 0.5));
+    }
+    50% {
+      filter: drop-shadow(0 0 15px rgba(112, 0, 255, 0.8)) drop-shadow(2px 0 0 rgba(0, 240, 255, 0.7));
+    }
+    100% {
+      filter: drop-shadow(0 0 8px rgba(255, 0, 123, 0.7)) drop-shadow(-1px 0 0 rgba(0, 255, 200, 0.6));
+    }
+  }
+
+  .rec-badge {
+    position: absolute;
+    top: -12px;
+    right: -24px;
+    font-size: 9px;
+    font-family: monospace;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 1px;
+    background: rgba(0,0,0,0.5);
+    padding: 1px 5px;
+    border-radius: 2px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    color: #e8f1f5;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+  }
+  h1 { font-size: 22px; margin-bottom: 6px; }
+  p.sub { color: #9fb3c8; font-size: 13px; margin-bottom: 20px; }
+  input {
+    width: 100%;
+    padding: 13px 16px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(0,0,0,0.3);
+    color: #fff;
+    outline: none;
+    margin-bottom: 12px;
+  }
+  input:focus { border-color: #4fc3f7; }
+  button {
+    width: 100%;
+    padding: 13px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    background: #4fc3f7;
+    color: #06232f;
+    cursor: pointer;
+    transition: filter .2s;
+  }
+  button:hover { filter: brightness(1.1); }
+  button:disabled { opacity: .6; cursor: not-allowed; }
+  .result { margin-top: 20px; }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  .row b { color: #4fc3f7; font-weight: 600; }
+  .row span { text-align: right; word-break: break-word; max-width: 60%; }
+  .empty { color: #9fb3c8; font-size: 13px; font-style: italic; }
+  .error {
+    background: rgba(244,67,54,0.15);
+    border: 1px solid rgba(244,67,54,0.4);
+    color: #ff8a80;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-top: 20px;
+  }
+  .loading { text-align: center; margin-top: 20px; color: #4fc3f7; }
+  .note { margin-top: 16px; font-size: 11px; color: #7c90a8; text-align: center; }
+</style>
+</head>
+<body> 
+<div class="vfx-container">
+  <div class="live-tag">
+    <div class="live-dot"></div>
+    <span>LIVE</span>
+  </div>
+  <div style="position: relative; display: inline-block;">
+    <h1 class="app-title">DsKinG</h1>
+    
+  </div>
+</div>
+<div class="card">
+  <h1>SIM and CNIC</h1>
+  <input id="num" type="tel" placeholder="Check Mobile Number and CNIC" inputmode="numeric" maxlength="13">
+  <button id="btn">Search</button>
+  <div id="status" class="loading" style="display:none;">Search ho raha hai...</div>
+  <div id="result" class="result"></div>
+  <p class="note">Sirf aapno ke leyai hai es website ko share na karein.</p>
+</div>
+
+<script>
+const input = document.getElementById('num');
+const btn = document.getElementById('btn');
+const statusEl = document.getElementById('status');
+const resultEl = document.getElementById('result');
+
+async function lookup() {
+  const raw = input.value.trim();
+  if (!raw) return;
+  statusEl.style.display = 'block';
+  resultEl.innerHTML = '';
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/lookup?number=' + encodeURIComponent(raw));
+    const data = await res.json();
+    if (!res.ok) {
+      resultEl.innerHTML = `<div class="error">${data.error || 'Kuch gadbad hui.'}</div>`;
+      return;
+    }
+    const r = data.records[0];
+    const val = (v) => (v && String(v).trim()) ? String(v).trim() : '<span class="empty">—</span>';
+    if (data.type === 'cnic') {
+      const cards = data.records.map((rec, i) => `
+        <div class="row"><b>#${i + 1} Mobile</b><span>${val(rec.Mobile)}</span></div>
+        <div class="row"><b>Name</b><span>${val(rec.Name)}</span></div>
+        <div class="row"><b>Address</b><span>${val(rec.ADDRESS)}</span></div>`).join('<div style="height:1px;background:rgba(255,255,255,0.1);margin:10px 0;"></div>');
+      resultEl.innerHTML = `
+        <div class="row"><b>CNIC</b><span>${val(data.number)}</span></div>
+        <div class="row"><b>Total Numbers</b><span>${data.records.length}</span></div>
+        <div style="height:1px;background:rgba(255,255,255,0.15);margin:12px 0;"></div>
+        ${cards}`;
+      return;
+    }
+    resultEl.innerHTML = `
+      <div class="row"><b>Mobile</b><span>${val(r.Mobile || data.number)}</span></div>
+      <div class="row"><b>Name</b><span>${val(r.Name)}</span></div>
+      <div class="row"><b>CNIC</b><span>${val(r.CNIC)}</span></div>
+      <div class="row"><b>Address</b><span>${val(r.ADDRESS)}</span></div>`;
+  } catch (e) {
+    resultEl.innerHTML = `<div class="error">Connection problem. Dobara try karo.</div>`;
+  } finally {
+    statusEl.style.display = 'none';
+    btn.disabled = false;
+  }
+}
+
+btn.addEventListener('click', lookup);
+input.addEventListener('keydown', (e) => { if (e.key === 'Enter') lookup(); });
+</script>
+</body>
+</html>
